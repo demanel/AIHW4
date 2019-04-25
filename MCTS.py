@@ -13,6 +13,7 @@ import game1
 
 # You will want to use this import in your code
 import math
+import numpy
 
 # Whether to display the UCB rankings at each turn.
 DISPLAY_BOARDS = False 
@@ -99,6 +100,18 @@ def MCTS(root, rollouts):
 
     return random_move(root) # Replace this line with a correct implementation
 
+def rollout(node):
+    if node.state.isTerminal():
+        node.visits += 1
+        return node.value()
+    else:
+        if numpy.isnan(node.value()):
+            node.value = 0.0
+        child = random.choice(node.children)
+        childVal = rollout(child)
+        node.value = (node.value * node.visits / (node.visits + 1.0)) + (childVal / (node.visits + 1.0))
+        node.visits += 1
+        return node.value
 
 def parse_args():
     """
