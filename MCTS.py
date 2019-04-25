@@ -66,7 +66,11 @@ class Node(object):
         This node will be selected by parent with probability proportional
         to its weight."""
         "*** YOUR CODE HERE ***"
-        raise NotImplementedError("You must implement this method")
+        UCB_self = self.value + UCB_CONST*sqrt(math.log(self.parent.visits)/self.visits)
+        UCB_sum = 0
+        for i in self.parent.children:
+            UCB += i.value + UCB_CONST*sqrt(math.log(i.parent.visits)/i.visits)
+        return UCB_self/UCB_sum
 
 def MCTS(root, rollouts):
     """Select a move by Monte Carlo tree search.
@@ -85,6 +89,7 @@ def MCTS(root, rollouts):
     """
     "*** YOUR CODE HERE ***"
     # NOTE: you will need several helper functions
+    for i in range()
     return random_move(root) # Replace this line with a correct implementation
 
 
