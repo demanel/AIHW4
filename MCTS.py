@@ -89,7 +89,14 @@ def MCTS(root, rollouts):
     """
     "*** YOUR CODE HERE ***"
     # NOTE: you will need several helper functions
-    for i in range()
+    max = 0
+    currentNode = self
+    for child in self.children:
+        if child.UCBWeight > mox:
+            max = child.UCBWeight
+            currentNode = child
+    
+
     return random_move(root) # Replace this line with a correct implementation
 
 
