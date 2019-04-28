@@ -67,10 +67,16 @@ class Node(object):
         This node will be selected by parent with probability proportional
         to its weight."""
         "*** YOUR CODE HERE ***"
-        UCB_self = self.value + UCB_CONST*sqrt(math.log(self.parent.visits)/self.visits)
+        value = self.value
+        if numpy.isnan(self.value()):
+            value = .5
+        UCB_self = value + UCB_CONST*sqrt(math.log(self.parent.visits+1.0)/(self.visits+1.0))
         UCB_sum = 0.0
         for i in self.parent.children:
-            UCB += i.value + UCB_CONST*sqrt(math.log(i.parent.visits)/i.visits)
+            childValue = i.value
+            if numpy.isnan(childValue):
+                childValue = .5
+            UCB += childValue + UCB_CONST*sqrt(math.log(i.parent.visits+1.0)/(i.visits+1.0))
         return UCB_self/UCB_sum
 
 def MCTS(root, rollouts):
