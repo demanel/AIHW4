@@ -124,6 +124,8 @@ def MCTS(root, rollouts):
 
 def rollout(node):
     #Note: rollout does NOT update previous nodes
+    for move in node.state.getMoves():
+        node.addMove(move)
     if node.state.isTerminal():
         node.visits += 1
         return node.value()
@@ -136,6 +138,8 @@ def rollout(node):
 
 def select(node):
     #Note: rollout does NOT update previous nodes
+    for move in node.state.getMoves():
+        node.addMove(move)
     if node.visits == 0:
         node.visits += 1
         return node
