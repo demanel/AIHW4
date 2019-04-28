@@ -115,10 +115,10 @@ def MCTS(root, rollouts):
             currentNode = currentNode.parent
     max = 0
     bestMove = None
-    for move in root.state.getMoves:
-        if root.moves[move].value > max:
+    for move in root.state.getMoves():
+        if root.children[move].value > max:
             bestMove = move
-            max = root.moves[move].value
+            max = root.children[move].value
     return bestMove
 
 
@@ -136,7 +136,7 @@ def rollout(node):
 
 def select(node):
     #Note: rollout does NOT update previous nodes
-    if node.visits = 0:
+    if node.visits == 0:
         node.visits += 1
         return node
     node.visits += 1
