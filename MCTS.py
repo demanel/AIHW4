@@ -106,21 +106,14 @@ def MCTS(root, rollouts):
     #current goal: make this loop for rollout times, making sure to expand correct node each time
     max = 0
     currentNode = self
-    for child in self.children:
-        if child.UCBWeight > mox:
-            max = child.UCBWeight
-            currentNode = child
-    newValue = rollout(currentNode)
+    nodeToExpand = select(currentNode)
+    nodeToExpand.value = rollout(currentNode)
     #need to propogate up through parents
     #is root node's parent initialized as None??
     while currentNode.parent != None:
         currentNode.parent.updateValue(currentNode.value)
         currentNode = currentNode.parent
 
-
-
-
-return random_move(root) # Replace this line with a correct implementation
 
 def rollout(node):
     #Note: rollout does NOT update previous nodes
@@ -136,6 +129,9 @@ def rollout(node):
 
 def select(node):
     #Note: rollout does NOT update previous nodes
+    if node.visits = 0:
+        node.visits += 1
+        return node
     node.visits += 1
     children = []
     UCBs = []
