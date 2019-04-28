@@ -128,9 +128,9 @@ def rollout(node):
         node.addMove(move)
     if node.state.isTerminal():
         node.visits += 1
-        return node.value()
+        return node.getValue()
     else:
-        if numpy.isnan(node.value()):
+        if numpy.isnan(node.getValue()):
             node.value = 0.0
         child = random.choice(node.children)
         childVal = rollout(child)
