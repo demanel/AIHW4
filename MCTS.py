@@ -105,7 +105,7 @@ def MCTS(root, rollouts):
     # NOTE: you will need several helper functions
     #current goal: make this loop for rollout times, making sure to expand correct node each time
     for i in range(0,rollouts):
-        currentNode = self
+        currentNode = root
         nodeToExpand = select(currentNode)
         nodeToExpand.value = rollout(currentNode)
         #need to propogate up through parents
