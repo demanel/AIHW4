@@ -75,7 +75,7 @@ class Node(object):
         to its weight."""
         "*** YOUR CODE HERE ***"
         value = self.value
-        if numpy.isnan(self.value()):
+        if numpy.isnan(value):
             value = .5
         UCB_self = value + UCB_CONST*sqrt(math.log(self.parent.visits+1.0)/(self.visits+1.0))
         UCB_sum = 0.0
@@ -148,9 +148,10 @@ def select(node):
     UCBs = []
     if node.state.isTerminal():
         return
-    for child in node.children:
-        children.add(child)
-        UCBs.add(child.UCBWeight)
+    for move in node.children:
+        child = node.children[move]
+        children.append(child)
+        UCBs.append(child.UCBWeight())
     newNode = numpy.random.choice(children, 1, UCBs)
     return select(newNode)
 
