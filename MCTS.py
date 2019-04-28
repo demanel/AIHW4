@@ -68,7 +68,7 @@ class Node(object):
         to its weight."""
         "*** YOUR CODE HERE ***"
         UCB_self = self.value + UCB_CONST*sqrt(math.log(self.parent.visits)/self.visits)
-        UCB_sum = 0
+        UCB_sum = 0.0
         for i in self.parent.children:
             UCB += i.value + UCB_CONST*sqrt(math.log(i.parent.visits)/i.visits)
         return UCB_self/UCB_sum
@@ -122,6 +122,19 @@ def rollout(node):
         node.value = (node.value * node.visits / (node.visits + 1.0)) + (childVal / (node.visits + 1.0))
         node.visits += 1
         return node.value
+
+def select(node):
+    #Note: rollout does NOT update previous nodes
+    unexplored_children = []
+    if node.state.isTerminal():
+        return
+    for child in node.children:
+        if numpy.isnan(child.value()):
+            unexplored_children.add([child,node.UCBWeight()])
+        else:
+            rollout(child)
+    return
+
 
 def parse_args():
     """
