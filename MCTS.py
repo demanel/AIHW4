@@ -66,7 +66,6 @@ class Node(object):
         else:
             if outcome < self.value:
                 self.value = outcome
-        return
         #raise NotImplementedError("You must implement this method")
 
     def UCBWeight(self):
@@ -111,9 +110,9 @@ def MCTS(root, rollouts):
         nodeToExpand.value = rollout(nodeToExpand)
         #need to propogate up through parents
         #is root node's parent initialized as None??
-        while currentNode.parent != None:
-            currentNode.parent.updateValue(currentNode.value)
-            currentNode = currentNode.parent
+        while nodeToExpand.parent != None:
+            nodeToExpand.parent.updateValue(nodeToExpand.value)
+            nodeToExpand = nodeToExpand.parent
     max = -1
     bestMove = None
     for move in root.state.getMoves():
