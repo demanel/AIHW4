@@ -90,17 +90,27 @@ def MCTS(root, rollouts):
     """
     "*** YOUR CODE HERE ***"
     # NOTE: you will need several helper functions
+    #current goal: make this loop for rollout times, making sure to expand correct node each time
     max = 0
     currentNode = self
     for child in self.children:
         if child.UCBWeight > mox:
             max = child.UCBWeight
             currentNode = child
-    
+    newValue = rollout(currentNode)
+    #need to propogate up through parents
+    #is root node's parent initialized as None??
+    while currentNode.parent != None:
+        currentNode = currentNode.parent
+        currentNode.value = (node.value * node.visits / (node.visits + 1.0)) + (childVal / (node.visits + 1.0))
 
-    return random_move(root) # Replace this line with a correct implementation
+
+
+
+return random_move(root) # Replace this line with a correct implementation
 
 def rollout(node):
+    #Note: rollout does NOT update previous nodes
     if node.state.isTerminal():
         node.visits += 1
         return node.value()
