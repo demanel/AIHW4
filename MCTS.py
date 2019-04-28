@@ -77,13 +77,14 @@ class Node(object):
         value = self.value
         if numpy.isnan(value):
             value = .5
-        UCB_self = value + UCB_CONST*sqrt(math.log(self.parent.visits+1.0)/(self.visits+1.0))
+        UCB_self = value + UCB_CONST*math.sqrt(math.log(self.parent.visits+1.0)/(self.visits+1.0))
         UCB_sum = 0.0
-        for i in self.parent.children:
-            childValue = i.value
+        for siblingMove in self.parent.children:
+            sibling = self.parent.children[siblingMove]
+            childValue = sibling.value
             if numpy.isnan(childValue):
                 childValue = .5
-            UCB += childValue + UCB_CONST*sqrt(math.log(i.parent.visits+1.0)/(i.visits+1.0))
+            UCB_sum += childValue + UCB_CONST*math.sqrt(math.log(sibling.parent.visits+1.0)/(sibling.visits+1.0))
         return UCB_self/UCB_sum
 
 def MCTS(root, rollouts):
@@ -152,7 +153,7 @@ def select(node):
         child = node.children[move]
         children.append(child)
         UCBs.append(child.UCBWeight())
-    newNode = numpy.random.choice(children, 1, UCBs)
+    newNode = numpy.random.choice(children, 1, UCBs)[0]
     return select(newNode)
 
 
