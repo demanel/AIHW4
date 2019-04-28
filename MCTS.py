@@ -136,15 +136,17 @@ def rollout(node):
 
 def select(node):
     #Note: rollout does NOT update previous nodes
-    unexplored_children = []
+    node.visits += 1
+    children = []
+    UCBs = []
     if node.state.isTerminal():
         return
     for child in node.children:
-        if numpy.isnan(child.value()):
-            unexplored_children.add([child,node.UCBWeight()])
-        else:
-            rollout(child)
-    return
+        children.add(child)
+        UCBs.add(child.UCBWeight)
+    newNode = numpy.random.choice(children, 1, UCBs)
+    return select(newNode)
+
 
 
 def parse_args():
