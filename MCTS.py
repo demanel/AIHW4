@@ -60,7 +60,14 @@ class Node(object):
         outcome: +1 for 1st player win, -1 for 2nd player win, 0 for draw."""
         "*** YOUR CODE HERE ***"
         # NOTE: which outcome is preferred depends on self.state.turn()
-        raise NotImplementedError("You must implement this method")
+        if self.state.turn == 1:
+            if outcome > self.value:
+                self.value = outcome
+        else:
+            if outcome < self.value:
+                self.value = outcome
+        return
+        #raise NotImplementedError("You must implement this method")
 
     def UCBWeight(self):
         """Weight from the UCB formula used by parent to select a child.
@@ -107,8 +114,8 @@ def MCTS(root, rollouts):
     #need to propogate up through parents
     #is root node's parent initialized as None??
     while currentNode.parent != None:
+        currentNode.parent.updateValue(currentNode.value)
         currentNode = currentNode.parent
-        currentNode.value = (node.value * node.visits / (node.visits + 1.0)) + (childVal / (node.visits + 1.0))
 
 
 
@@ -125,8 +132,6 @@ def rollout(node):
             node.value = 0.0
         child = random.choice(node.children)
         childVal = rollout(child)
-        node.value = (node.value * node.visits / (node.visits + 1.0)) + (childVal / (node.visits + 1.0))
-        node.visits += 1
         return node.value
 
 def select(node):
