@@ -127,7 +127,7 @@ def rollout(node):
     #Note: rollout does NOT update previous nodes
     for move in node.state.getMoves():
         node.addMove(move)
-    if node.state.isTerminal():
+    if node.state.isTerminal() or len(node.children) == 0:
         node.visits += 1
         return node.getValue()
     else:
