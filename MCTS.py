@@ -63,7 +63,7 @@ class Node(object):
 
         self.visits += 1.0
         normalizedOutcome = (outcome + 1.0) / 2.0
-        relativeOutcome = normalizedOutcome if self.state.turn == 1 else (1 - normalizedOutcome)
+        relativeOutcome = normalizedOutcome
         if numpy.isnan(self.value):
             self.value = relativeOutcome
         else:
@@ -118,13 +118,21 @@ def MCTS(root, rollouts):
         while nodeToExpand.parent != None:
             nodeToExpand.parent.updateValue(terminalValue)
             nodeToExpand = nodeToExpand.parent
-    max = -1
     bestMove = None
-    for move in root.state.getMoves():
-        print move, root.children[move].getValue()
-        if root.children[move].getValue() > max:
-            bestMove = move
-            max = root.children[move].getValue()
+    if root.state.turn == 1:
+        max = -2
+        for move in root.state.getMoves():
+            print move, root.children[move].getValue()
+            if root.children[move].getValue() > max:
+                bestMove = move
+                max = root.children[move].getValue()
+    else:
+        min = 2
+        for move in root.state.getMoves():
+            print move, root.children[move].getValue()
+            if root.children[move].getValue() < min:
+                bestMove = move
+                min = root.children[move].getValue()
     return bestMove
 
 
