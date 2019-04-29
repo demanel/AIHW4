@@ -63,7 +63,7 @@ class Node(object):
         normalizedOutcome = (outcome + 1.0) / 2.0
         relativeOutcome = normalizedOutcome if self.state.turn == 1 else (1 - normalizedOutcome)
         self.value = (self.value * self.visits / (self.visits + 1.0)) + (relativeOutcome / (self.visits + 1.0))
-        
+
         #raise NotImplementedError("You must implement this method")
 
     def UCBWeight(self):
@@ -122,17 +122,12 @@ def MCTS(root, rollouts):
 
 def rollout(node):
     #Note: rollout does NOT update previous nodes
-    for move in node.state.getMoves():
-        node.addMove(move)
-    if node.state.isTerminal(): # or len(node.children) == 0:
-        print(node.state.value())
-        return node.state.value()
+
+    if node.state.isTerminal():
+        return node
     else:
-        if numpy.isnan(node.getValue()):
-            node.value = 0.5
-        child = random.choice(node.children.values())
-        childVal = rollout(child)
-        return childVal
+        move = random.choice(node.state.getMoves())
+        return rollout(Node(node.state.nextState(move), node))
 
 def select(node):
     #Note: rollout does NOT update previous nodes
