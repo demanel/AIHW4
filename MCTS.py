@@ -60,9 +60,13 @@ class Node(object):
         outcome: +1 for 1st player win, -1 for 2nd player win, 0 for draw."""
         "*** YOUR CODE HERE ***"
         # NOTE: which outcome is preferred depends on self.state.turn()
+
+        self.visits += 1.0
         normalizedOutcome = (outcome + 1.0) / 2.0
         relativeOutcome = normalizedOutcome if self.state.turn == 1 else (1 - normalizedOutcome)
-        self.value = (self.value * self.visits / (self.visits + 1.0)) + (relativeOutcome / (self.visits + 1.0))
+        if numpy.isnan(self.value):
+            self.value = 0
+        self.value = (self.value * (self.visits - 1.0) / self.visits) + (relativeOutcome / self.visits)
 
         #raise NotImplementedError("You must implement this method")
 
@@ -71,18 +75,19 @@ class Node(object):
         This node will be selected by parent with probability proportional
         to its weight."""
         "*** YOUR CODE HERE ***"
-        value = self.value
-        if numpy.isnan(value):
-            value = .5
-        UCB_self = value + UCB_CONST*math.sqrt(math.log(self.parent.visits+1.0)/(self.visits+1.0))
-        UCB_sum = 0.0
-        for siblingMove in self.parent.children:
-            sibling = self.parent.children[siblingMove]
-            childValue = sibling.value
-            if numpy.isnan(childValue):
-                childValue = .5
-            UCB_sum += childValue + UCB_CONST*math.sqrt(math.log(sibling.parent.visits+1.0)/(sibling.visits+1.0))
-        return UCB_self/UCB_sum
+        return self.value + UCB_CONST * math.sqrt(math.log(self.parent.visits) / self.visits)
+        # value = self.value
+        # if numpy.isnan(value):
+        #     value = .5
+        # UCB_self = value + UCB_CONST*math.sqrt(math.log(self.parent.visits+1.0)/(self.visits+1.0))
+        # UCB_sum = 0.0
+        # for siblingMove in self.parent.children:
+        #     sibling = self.parent.children[siblingMove]
+        #     childValue = sibling.value
+        #     if numpy.isnan(childValue):
+        #         childValue = .5
+        #     UCB_sum += childValue + UCB_CONST*math.sqrt(math.log(sibling.parent.visits+1.0)/(sibling.visits+1.0))
+        # return UCB_self/UCB_sum
 
 def MCTS(root, rollouts):
     """Select a move by Monte Carlo tree search.
@@ -105,15 +110,17 @@ def MCTS(root, rollouts):
     for i in range(rollouts):
         currentNode = root
         nodeToExpand = select(currentNode)
-        nodeToExpand.updateValue(rollout(nodeToExpand))
+        terminalValue = rollout(nodeToExpand)
+        nodeToExpand.updateValue(terminalValue)
         #need to propogate up through parents
         #is root node's parent initialized as None??
         while nodeToExpand.parent != None:
-            nodeToExpand.parent.updateValue(nodeToExpand.value)
+            nodeToExpand.parent.updateValue(nodeToExpand.getValue())
             nodeToExpand = nodeToExpand.parent
     max = -1
     bestMove = None
     for move in root.state.getMoves():
+        print move, root.children[move].getValue()
         if root.children[move].getValue() > max:
             bestMove = move
             max = root.children[move].getValue()
@@ -131,12 +138,15 @@ def rollout(node):
 
 def select(node):
     #Note: rollout does NOT update previous nodes
-    for move in node.state.getMoves():
-        node.addMove(move)
-    if node.visits == 0:
-        node.visits += 1
-        return node
-    node.visits += 1
+    if len(node.state.getMoves()) != len(node.children):
+        candidates = []
+        for move in node.state.getMoves():
+            if move not in node.children:
+                candidates.append(move)
+        chosenMove = random.choice(candidates)
+        node.addMove(chosenMove)
+        return node.children[chosenMove]
+
     children = []
     UCBs = []
     if node.state.isTerminal():
@@ -145,7 +155,8 @@ def select(node):
         child = node.children[move]
         children.append(child)
         UCBs.append(child.UCBWeight())
-    newNode = numpy.random.choice(children, 1, UCBs)[0]
+    weights = [UCBs[i] / sum(UCBs) for i in range(len(UCBs))]
+    newNode = numpy.random.choice(children, 1, weights)[0]
     return select(newNode)
 
 
