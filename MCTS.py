@@ -122,14 +122,12 @@ def MCTS(root, rollouts):
     if root.state.turn == 1:
         max = -2
         for move in root.state.getMoves():
-            print move, root.children[move].getValue()
             if root.children[move].getValue() > max:
                 bestMove = move
                 max = root.children[move].getValue()
     else:
         min = 2
         for move in root.state.getMoves():
-            print move, root.children[move].getValue()
             if root.children[move].getValue() < min:
                 bestMove = move
                 min = root.children[move].getValue()
