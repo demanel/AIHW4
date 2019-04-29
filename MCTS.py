@@ -105,7 +105,7 @@ def MCTS(root, rollouts):
     for i in range(0,rollouts):
         currentNode = root
         nodeToExpand = select(currentNode)
-        nodeToExpand.value = rollout(nodeToExpand)
+        nodeToExpand.updateValue(rollout(nodeToExpand))
         #need to propogate up through parents
         #is root node's parent initialized as None??
         while nodeToExpand.parent != None:
@@ -124,15 +124,15 @@ def rollout(node):
     #Note: rollout does NOT update previous nodes
     for move in node.state.getMoves():
         node.addMove(move)
-    if node.state.isTerminal() or len(node.children) == 0:
-        node.visits += 1
-        return node.getValue()
+    if node.state.isTerminal(): # or len(node.children) == 0:
+        print(node.state.value())
+        return node.state.value()
     else:
         if numpy.isnan(node.getValue()):
-            node.value = 0.0
+            node.value = 0.5
         child = random.choice(node.children.values())
         childVal = rollout(child)
-        return node.value
+        return childVal
 
 def select(node):
     #Note: rollout does NOT update previous nodes
