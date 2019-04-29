@@ -16,7 +16,7 @@ import math
 import numpy
 
 # Whether to display the UCB rankings at each turn.
-DISPLAY_BOARDS = False 
+DISPLAY_BOARDS = False
 
 # UCB_CONST value - you should experiment with different values
 UCB_CONST = .5
@@ -24,7 +24,7 @@ UCB_CONST = .5
 
 class Node(object):
     """Node used in MCTS"""
-    
+
     def __init__(self, state, parent_node):
         """Constructor for a new node representing game state
         state. parent_node is the Node that is the parent of this
@@ -35,7 +35,7 @@ class Node(object):
         self.visits = 0
         self.value = float("nan")
         # Note: you may add additional fields if needed
-        
+
     def addMove(self, move):
         """
         Adds a new node for the child resulting from move if one doesn't already exist.
@@ -46,11 +46,11 @@ class Node(object):
             self.children[move] = Node(state, self)
             return True
         return False
-    
+
     def getValue(self):
         """
         Gets the value estimate for the current node. Value estimates should correspond
-        to the win percentage for the player at this node (accounting for draws as in 
+        to the win percentage for the player at this node (accounting for draws as in
         the project description).
         """
         return self.value
@@ -60,12 +60,10 @@ class Node(object):
         outcome: +1 for 1st player win, -1 for 2nd player win, 0 for draw."""
         "*** YOUR CODE HERE ***"
         # NOTE: which outcome is preferred depends on self.state.turn()
-        if self.state.turn == 1:
-            if outcome > self.value:
-                self.value = outcome
-        else:
-            if outcome < self.value:
-                self.value = outcome
+        normalizedOutcome = (outcome + 1.0) / 2.0
+        relativeOutcome = normalizedOutcome if self.state.turn == 1 else (1 - normalizedOutcome)
+        self.value = (self.value * self.visits / (self.visits + 1.0)) + (relativeOutcome / (self.visits + 1.0))
+        
         #raise NotImplementedError("You must implement this method")
 
     def UCBWeight(self):
@@ -172,9 +170,9 @@ def parse_args():
                     "make display the board at each MCTS turn with MCTS's rankings of moves.")
     p.add_argument("--rolloutsSecondMCTSAgent", type=int, default=0, help="If non-0, other player "+\
                     "will also be an MCTS agent and will use the number of rollouts set with this "+\
-                    "argument. Default=0 (other player is random)")   
+                    "argument. Default=0 (other player is random)")
     p.add_argument("--ucbConst", type=float, default=.5, help="Value for the UCB exploration"+\
-                    "constant. Default=.5") 
+                    "constant. Default=.5")
     args = p.parse_args()
     if args.displayBoard:
         global DISPLAY_BOARDS
@@ -194,7 +192,7 @@ def random_move(node):
 
 def run_multiple_games(num_games, args):
     """
-    Runs num_games games, with no printing except for a report on which game 
+    Runs num_games games, with no printing except for a report on which game
     number is currently being played, and reports final number
     of games won by player 1 and draws. args specifies whether player 1 or
     player 2 is MCTS and how many rollouts to use. For multiple games, you
@@ -252,8 +250,8 @@ def play_game(args):
             node2 = node2.children[move]
     return node
 
-            
-    
+
+
 
 def main():
     """
@@ -268,7 +266,7 @@ def main():
     else:
         # Play the game
         node = play_game(args)
-    
+
         # Print result
         winner = node.state.value()
         print game1.print_board(node.state)
@@ -278,7 +276,7 @@ def main():
             print "Player 2 wins"
         else:
             print "It's a draw"
-            
-            
+
+
 if __name__ == "__main__":
     main()
