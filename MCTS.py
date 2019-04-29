@@ -65,8 +65,9 @@ class Node(object):
         normalizedOutcome = (outcome + 1.0) / 2.0
         relativeOutcome = normalizedOutcome if self.state.turn == 1 else (1 - normalizedOutcome)
         if numpy.isnan(self.value):
-            self.value = 0
-        self.value = (self.value * (self.visits - 1.0) / self.visits) + (relativeOutcome / self.visits)
+            self.value = relativeOutcome
+        else:
+            self.value = (self.value * (self.visits - 1.0) / self.visits) + (relativeOutcome / self.visits)
 
         #raise NotImplementedError("You must implement this method")
 
@@ -115,7 +116,7 @@ def MCTS(root, rollouts):
         #need to propogate up through parents
         #is root node's parent initialized as None??
         while nodeToExpand.parent != None:
-            nodeToExpand.parent.updateValue(nodeToExpand.getValue())
+            nodeToExpand.parent.updateValue(terminalValue)
             nodeToExpand = nodeToExpand.parent
     max = -1
     bestMove = None
