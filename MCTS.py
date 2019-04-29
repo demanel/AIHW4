@@ -102,7 +102,7 @@ def MCTS(root, rollouts):
     "*** YOUR CODE HERE ***"
     # NOTE: you will need several helper functions
     #current goal: make this loop for rollout times, making sure to expand correct node each time
-    for i in range(0,rollouts):
+    for i in range(rollouts):
         currentNode = root
         nodeToExpand = select(currentNode)
         nodeToExpand.updateValue(rollout(nodeToExpand))
@@ -124,7 +124,7 @@ def rollout(node):
     #Note: rollout does NOT update previous nodes
 
     if node.state.isTerminal():
-        return node
+        return node.state.value()
     else:
         move = random.choice(node.state.getMoves())
         return rollout(Node(node.state.nextState(move), node))
